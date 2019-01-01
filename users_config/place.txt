@@ -1,0 +1,3 @@
+Place it:
+In Windows : c:/Users/%USERNAME%/.config/pas2cpp
+In Linux : /home/$USER/.config/pas2cpp (in Linux cmake do it automatic)
