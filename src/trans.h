@@ -126,7 +126,7 @@ char *malloc(), *realloc();
 
 
 #ifdef _WIN32
- #define    P2C_HOME        "c:/Users/%USERNAME%/AppData/Local/pas2cpp"
+ #define    P2C_HOME        "c:/Users/%USERNAME%/.config/pas2cpp"
 #else
  #define    P2C_HOME        "/home/$USER/.config/pas2cpp"
 #endif
