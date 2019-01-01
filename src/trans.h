@@ -125,21 +125,20 @@ char *malloc(), *realloc();
 #endif
 
 
-#ifndef P2C_HOME
-# ifdef citPWS
-#  define    P2C_HOME        "/lib/p2c"
-# else
-#  define    P2C_HOME        "/usr/local/p2c"     /* sounds reasonable... */
-# endif
+#ifdef _WIN32
+ #define    P2C_HOME        "c:/Users/%USERNAME%/AppData/Local/pas2cpp"
+#else
+ #define    P2C_HOME        "/home/$USER/.config/pas2cpp"
 #endif
+
 
 #ifdef define_globals
-char *p2c_home = P2C_HOME;
+char p2c_home[1024];
 #else
-extern char *p2c_home;
+extern p2c_home[1024];
 #endif
 
-#define P2C_VERSION  "2.00.Oct.15"
+#define P2C_VERSION  "2.00.Jan.19"
 
 
 
@@ -236,7 +235,7 @@ char *toknames[(int)TOK_LAST] = { "",
     "an \"include\" file", "$end$",
     "an identifier", "an integer", "end of file",
 
-    "an '->'", "an '&'", "a '|'", "a '!'", 
+    "an '->'", "an '&'", "a '|'", "a '!'",
     "a '~'", "a '%'", "a '?'",
     "a '<<'", "a '>>'", "a '=='", "a '!='",
     "a '++'", "a '--'", "a '&&'", "a '||'",
@@ -505,8 +504,8 @@ typedef struct S_meaning {
              volatilequal:1,   /* Object has C "volatile" qualifier */
              constqual:1,      /* Object has C "const" qualifier */
              isref:1,          /* Is a C++ reference variable */
-             dummy18:1, dummy19:1, 
-	     dummy20:1, dummy21:1, dummy22:1, dummy23:1, dummy24:1, dummy25:1, 
+             dummy18:1, dummy19:1,
+	     dummy20:1, dummy21:1, dummy22:1, dummy23:1, dummy24:1, dummy25:1,
 	     dummy26:1, dummy27:1, dummy28:1, dummy29:1, dummy30:1, dummy31:1;
     Value val;		       /* (above) */
     int refcount;	       /* Number of references to meaning in program */
@@ -1118,7 +1117,7 @@ extern char filenotfoundname[40], filenotopenname[40];
 extern char filewriteerrorname[40], badinputformatname[40], endoffilename[40];
 extern short strcpyleft;
 extern char language[40], target[40], maintype[40];
-extern int sizeof_char, sizeof_short, sizeof_integer, sizeof_pointer, 
+extern int sizeof_char, sizeof_short, sizeof_integer, sizeof_pointer,
            sizeof_double, sizeof_float, sizeof_enum, sizeof_int, sizeof_long;
 extern short size_t_long;
 extern int setbits, defaultsetsize, seek_base, integerwidth, realwidth;

@@ -19,7 +19,7 @@
 SHELL = /bin/sh
 
 # Directories (private version)
-HOMEDIR = ../home
+HOMEDIR = ~/.config/pas2cpp
 INCDIR = ../home/p2c
 BINDIR = ..
 LIBDIR = ../home

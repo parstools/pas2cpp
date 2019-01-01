@@ -400,7 +400,7 @@ Static void postrc()
     ucharname = (*name_UCHAR) ? name_UCHAR :
                 (signedchars == 0) ? "char" : "unsigned char";
     scharname = (*name_SCHAR) ? name_SCHAR :
-                (signedchars == 1) ? "char" : 
+                (signedchars == 1) ? "char" :
                 (useAnyptrMacros == 1) ? "Signed char" : "signed char";
     for (longbits = 1, val = LONG_MAX; (val >>= 1); longbits++) ;
     if (sizeof_char) {
@@ -676,12 +676,9 @@ char **argv;
     i = 0;
     while (i < argc && strcmp(argv[i], "-H")) i++;
     if (i < argc-1)
-	p2c_home = argv[i+1];
-    else {
-	cp = getenv("P2C_HOME");
-	if (cp)
-	    p2c_home = cp;
-    }
+		strcpy(p2c_home, argv[i + 1]);
+    else
+		expandVar(p2c_home, P2C_HOME);
     init_stuff();
     i = 0;
     while (i < argc && strcmp(argv[i], "-i")) i++;
@@ -949,7 +946,7 @@ char **argv;
         setbuf(codef, NULL);      /* for debugging */
     outf = codef;
     outf_lnum = 1;
-/*  
+/*
     logf = NULL; 2015 Oct 02:
 trans.c:952:10: error: non-object type 'float (float)' is not assignable
 Rename it here and in trans.h:
@@ -1260,7 +1257,7 @@ int waddr;
 	    tp->dumped = 1;
 	}
 	switch (tp->kind) {
-	    
+
 	  case TK_STRING:
 	    fprintf(outf, "Str");
 	    if (tp->structdefd)
@@ -1302,7 +1299,7 @@ int waddr;
 	    fprintf(outf, ":");
 	    dumptypename(tp->basetype, 0);
 	    break;
-		    
+
 	  case TK_SMALLSET:
 	    fprintf(outf, "Sm");
 	    /* fall through */
@@ -1347,7 +1344,7 @@ int waddr;
 	  default:
 	    fprintf(outf, "%s", typekindname(tp->kind));
 	    break;
-		    
+
 	}
 	if (tp->kind != TK_ARRAY && tp->kind != TK_SMALLARRAY &&
 	    (tp->smin || tp->smax)) {

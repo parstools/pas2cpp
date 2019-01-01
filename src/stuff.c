@@ -885,8 +885,117 @@ void init_stuff()
         formatbuf[i] = ALLOC(1000, char, misc);
 }
 
+/*Linux: Environment variable names used by the utilities in the Shell and Utilities volume of IEEE Std 1003.1 - 2001
+consist solely of uppercase letters, digits, and the '_' (underscore)from the characters defined in
+Portable Character Set and do not begin with a digit
+Algorithm:
+Windows:
+  search % by strchr
+  if not found return;
+  pos1+1 is begin variable name if not exceeds zero sentinel
+  search % by strchr
+  if not found return;
+  pos2 is after end variable name
+  emit pos1-pos2 if pos2>pos1
+  go to begin loop
+Linux:
+  search $ by strchr
+  if not found return;
+  pos1+1 is begin variable name if not exceeds zero sentinel
+  if pos1+1 is not 'A'..'Z','_' ->variable len 0
+  else iterate until not 'A'..'Z','_','0'..'9'
+  pos2 is after end variable name
+  emit pos1-pos2
+  go to begin loop
+*/
+void expandVarEmit(beg, end, buf, outidx)
+char *beg; char *end; char *buf; int *outidx;
+{
+#define MaxLen 63
+	if (beg >= end) return;
+	char varbuf[MaxLen + 1];
+	if (end - beg > MaxLen)
+		end = beg + MaxLen;
+	strncpy(varbuf, beg, end - beg);
+	varbuf[end - beg] = '\0';
+	char *value = getenv(varbuf);
+	if (value)
+	{
+		int lenval = strlen(value);
+		strncpy(buf + *outidx, value, lenval);
+		*outidx += lenval;
+	}
+}
 
-
+char *expandVar(buf, path)
+char *buf; char *path;
+{
+	int outidx = 0;
+	char *p = path;
+	while (1)
+	{
+#ifdef _WIN32
+		char *pos1 = strchr(p, '%');
+#else
+		char *pos1 = strchr(p, '$');
+#endif
+		if (!pos1)
+		{
+			char *zpos = strchr(p, '\0');
+			strncpy(buf + outidx, p, zpos - p);
+			outidx += zpos - p;
+			buf[outidx] = '\0';
+			return buf;
+		}
+		strncpy(buf + outidx, p, pos1 - p);
+		outidx += pos1 - p;
+		if (pos1[1] == '\0')
+		{
+			strncpy(buf + outidx, pos1, pos1 - p);
+			outidx += pos1 - p;
+			buf[outidx] = '\0';
+			return buf;
+		}
+#ifdef _WIN32
+		char *pos2 = strchr(pos1 + 1, '%');
+		if (!pos2)
+		{
+			char *zpos = strchr(pos1 + 1, '\0');
+			strncpy(buf + outidx, pos1 + 1, zpos - p - 1);
+			outidx += zpos - p - 1;
+			buf[outidx] = '\0';
+			return buf;
+		}
+#else
+		char *pos2 = pos1 + 1;
+		char c = *pos2;
+		if (c == '\0')
+		{
+			strncpy(buf + outidx, pos1, pos2 - pos1);
+			outidx += pos2 - pos1;
+			buf[outidx] = '\0';
+			return buf;
+		}
+		if (c >= 'A' && c <= 'Z' || c == '_')
+			while (c >= 'A' && c <= 'Z' || c == '_' || c >= '0' && c <= '9')
+			{
+				pos2++;
+				c = *pos2;
+			}
+#endif
+		expandVarEmit(pos1 + 1, pos2, buf, &outidx);
+		if (pos2[1] == '\0')
+		{
+			buf[outidx] = '\0';
+			return buf;
+		}
+#ifdef _WIN32
+		p = pos2 + 1;
+#else
+		p = pos2;
+#endif
+	}
+}
 
 /* End. */
 

@@ -75,6 +75,9 @@ extern char    *my_strtok          PP( (char *cp, char *delim) );
 extern char    *my_strtokq         PP( (char *cp, char *delim) );
 extern long     my_strtol          PP( (char *buf, char **ret, int base) );
 extern void     init_stuff         PV();
+extern void     expandVarEmit      PP( (char *beg, char *end, char *buf,
+                                       int *outidx) );
+extern char    *expandVar          PP( (char *buf, char *path) );
 
 /* Declarations from out.c */
 extern void     setup_out          PV();
