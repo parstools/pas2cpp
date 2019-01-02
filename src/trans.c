@@ -608,7 +608,7 @@ Static void openlogfile()
 
 void closelogfile()
 {
-    long ending_time;
+    time_t ending_time;
 
     if (logfile) {
 	fprintf(logfile, "\n\n");
